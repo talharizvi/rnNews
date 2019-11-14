@@ -2,13 +2,11 @@ import React from 'react';
 import {View,StyleSheet,TouchableOpacity} from 'react-native';
 
 
-const Card=(props)=>{
+const TopCardSection=(props)=>{
     return(
-        <TouchableOpacity onPress={()=>props.nav.navigate('WebViewScreen',{url:props.webUrl})}>
             <View style={[styles.cardStyle,{backgroundColor:props.backgroundColor}]} >
                 {props.children}
             </View>
-         </TouchableOpacity>
     )
 }
 
@@ -23,5 +21,5 @@ const styles=StyleSheet.create({
 })
 
 
-export default Card
+export default TopCardSection
 

@@ -1,15 +1,13 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
+import { View ,Text} from 'react-native'
 import { WebView } from 'react-native-webview';
 
-const WebviewScreen=(webUrl)=>{
+const WebviewScreen=({navigation})=>{
+    const webUrl = navigation.getParam("url",'')
     return(
-        <View style={{flex:1}}>
             <WebView
             source={{uri:webUrl}}
             />
-        </View>
-       
     )
 }
 
