@@ -24,7 +24,34 @@ import Business from './src/screens/Business';
 import Entertainment from './src/screens/Entertainment';
 import Sports from './src/screens/Sports';
 import Technology from './src/screens/Technology';
-import Trending from './src/screens/Trending';
+import Health from './src/screens/Health';
+
+
+const TabNavigator = createMaterialTopTabNavigator(
+  {
+      Health:{screen:Health},
+      Business:{screen:Business},
+      Sports:{screen:Sports},
+      Entertainment:{screen:Entertainment},
+      Technology:{screen:Technology},
+     
+  },
+  { 
+    swipeEnabled:true,
+    animationEnabled: true,
+    tabBarOptions: {
+      scrollEnabled: true,
+      activeTintColor: '#FFFFFF',
+      inactiveTintColor: '#F8F8F8',
+      style: {
+        backgroundColor: '#633689',
+      }, 
+      // labelStyle: {
+      //   textAlign: 'center',
+      // },
+    },  
+}  
+)
 
 const AppNavigator=createStackNavigator({
   Home:{
@@ -35,30 +62,14 @@ const AppNavigator=createStackNavigator({
   },
   WebViewScreen:{
     screen:WebViewScreen
+  },
+  TopTabBar:{
+    screen:TabNavigator
   }
 });
 
 
 
-const TabNavigator = createMaterialTopTabNavigator(
-  {
-      Business:Business,
-      Entertainment:Entertainment,
-      Sports:Sports,
-      Technology:Technology,
-      Trending:Trending
-  },
-  {  
-    tabBarOptions: {  
-        activeTintColor: 'white',  
-        showIcon: true,  
-        showLabel:false,  
-        style: {  
-            backgroundColor:'red'  
-        }  
-    },  
-}  
-)
 
 const AppContainer = createAppContainer(AppNavigator)
 

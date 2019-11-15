@@ -4,17 +4,9 @@ import axios from 'axios';
 import TopCardSection from '../custom/TopCardSection';
 
 var page = 1;
-const Entertainment=({navigation})=>{
-    const[data,setData]=useState([]) 
+const Health=({navigation})=>{
+    const[data,setData]=useState([])
     
-
-    useEffect(()=>{
-        axios.get(`https://newsapi.org/v2/top-headlines?country=us&apiKey=ac659059bcc34c4b9c74dfa215ff2eb7&category=entertainment&pageSize=10&page=${page}`)
-        .then(response=>{
-            console.log(response)
-            setData(response.data.articles)
-        })
-    },[])
 
     const setNewsImage=(item)=>{
         return(
@@ -31,31 +23,37 @@ const Entertainment=({navigation})=>{
         )
     }
 
+    useEffect(()=>{
+        axios.get(`https://newsapi.org/v2/top-headlines?country=us&apiKey=ac659059bcc34c4b9c74dfa215ff2eb7&category=health&pageSize=10&page=${page}`)
+        .then(response=>{
+            console.log(response)
+            setData(response.data.articles)
+        })
+    },[])
+
+
     const loadNextNews=()=>{
         console.log("inside load next news")
         page = page+1
         console.log(page)
-        axios.get(`https://newsapi.org/v2/top-headlines?country=us&apiKey=ac659059bcc34c4b9c74dfa215ff2eb7&category=entertainment&pageSize=10&page=${page}`)
+        axios.get(`https://newsapi.org/v2/top-headlines?country=us&apiKey=ac659059bcc34c4b9c74dfa215ff2eb7&category=health&pageSize=10&page=${page}`)
         .then(response=>{
             console.log("next NEWS",response)
             setData([...data,...response.data.articles])
         })
     }
-
-    return(
-    //console.log("#######",data),
-    <View>
-        
+    
+    return(<View>
         <FlatList
             data={data}
             renderItem={({item})=>
-            <TouchableOpacity onPress={()=>navigation.navigate('WebViewScreen',{url:item.url})}> 
+            <TouchableOpacity onPress={()=>navigation.navigate('WebViewScreen',{url:item.url})}>  
             <View style={{flexDirection:'row',marginHorizontal:10,marginVertical:5, borderRadius:8,
             borderWidth: 1,borderColor: '#000000',paddingVertical:5}}>
-                {setNewsImage(item)}
-                <Text style={{flex:1,fontSize:15,fontWeight:'bold'}}>{item.title}</Text>
-            </View>
-            </TouchableOpacity>
+            {setNewsImage(item)}
+            <Text style={{flex:1,fontSize:15,fontWeight:'bold'}}>{item.title}</Text>
+        </View>
+        </TouchableOpacity>
         }
         onEndReached={()=>
             console.log("end reached"),
@@ -65,4 +63,4 @@ const Entertainment=({navigation})=>{
     </View>)
 }
 
-export default Entertainment
+export default Health
