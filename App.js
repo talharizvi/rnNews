@@ -25,6 +25,7 @@ import Entertainment from './src/screens/Entertainment';
 import Sports from './src/screens/Sports';
 import Technology from './src/screens/Technology';
 import Health from './src/screens/Health';
+import Test from './src/screens/test';
 
 
 const TabNavigator = createMaterialTopTabNavigator(
@@ -54,6 +55,12 @@ const TabNavigator = createMaterialTopTabNavigator(
 )
 
 const AppNavigator=createStackNavigator({
+  // Test:{
+  //   screen:Test,
+  //     navigationOptions:{
+  //         header:null
+  //       }
+  // },
   Home:{
     screen:Home,
     navigationOptions:{

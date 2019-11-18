@@ -1,7 +1,7 @@
 import React,{useState,useEffect} from 'react';
 import {
     View,
-    Text,FlatList,Image,TouchableOpacity,ActivityIndicator
+    Text,FlatList,Image,TouchableOpacity,ActivityIndicator,SafeAreaView
   } from 'react-native';
 import axios from 'axios';
 import Card from '../custom/Card';
@@ -102,7 +102,8 @@ const Home=({navigation})=>{
   
 
     return(
-     latestData.length>0?   
+     latestData.length>0?
+     <SafeAreaView style={{flex:1}}>   
      <View style={{flex:1}}>
      <Text style={{fontSize:15,fontWeight:'bold'}}>{date}</Text>
      
@@ -123,13 +124,13 @@ const Home=({navigation})=>{
              }
              horizontal
              style={{marginBottom:5}}
+             keyExtractor={(item, index) => index.toString()}
          />
      </View>
      
      <Text style={{fontSize:20,marginLeft:5,marginBottom:5,fontWeight:'bold'}}>Top Categories</Text>
      <View>
      <FlatList 
-     
          data={categoryData}
          renderItem={({item})=>
          <TouchableOpacity onPress={()=>navigation.navigate(item.name)}>
@@ -148,7 +149,7 @@ const Home=({navigation})=>{
          }
 
          horizontal
-
+         keyExtractor={(item, index) => index.toString()}
          style={{marginBottom:10}}
      />
      <Text style={{fontSize:20,marginLeft:5,marginBottom:5,marginTop:5,fontWeight:'bold'}}>Latest News</Text>
@@ -166,13 +167,18 @@ const Home=({navigation})=>{
          </View>
           </Card>
          }
+         keyExtractor={(item, index) => index.toString()}
      />
      </View>
  </View>
+ </SafeAreaView>
     :
+    <SafeAreaView style={{flex:1}}>
     <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
     <ActivityIndicator size="large" color="#38302a" />
-    </View>)
+    </View>
+    </SafeAreaView>
+    )
 
     
 } 
