@@ -71,7 +71,7 @@ const AppNavigator=createStackNavigator({
     screen:WebViewScreen
   },
   TopTabBar:{
-    screen:TabNavigator
+    screen:TabNavigator,
   }
 });
 

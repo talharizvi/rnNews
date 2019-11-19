@@ -89,18 +89,6 @@ const Home=({navigation})=>{
         )
     }
 
-    //if(latestData.length>0){
-        // return(
-        
-        // )
-   // }
-    // else{
-    //     return(
-   
-    //     )
-    // }
-  
-
     return(
      latestData.length>0?
      <SafeAreaView style={{flex:1}}>   
