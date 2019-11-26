@@ -1,12 +1,14 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef,useCallback} from 'react';
 import {
     View,
-    Text,FlatList,Image,TouchableOpacity,ActivityIndicator,SafeAreaView
+    Text,FlatList,Image,TouchableOpacity,ActivityIndicator,SafeAreaView,Button,ScrollView,RefreshControl
   } from 'react-native';
 import axios from 'axios';
 import TopCardSection from '../custom/TopCardSection';
 import CardSection from '../custom/CardSection';
 import { connect } from "react-redux";
+import { FloatingAction } from "react-native-floating-action";
+import NetInfo from "@react-native-community/netinfo";
 
 const categoryData=[
     {
@@ -36,13 +38,69 @@ const categoryData=[
     }
 ]
 
+const floatingMenu=[
+    {
+        text: "Theme",
+        icon: require('../res/images/icons8-fire-100.png'),
+        name: "switch_theme",
+        position: 1
+      },
+]
+
+function wait(timeout) {
+    return new Promise(resolve => {
+      setTimeout(resolve, timeout);
+    });
+  }
 
 
 const Home=({navigation,props,theme})=>{
-
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        
+        wait(2000).then(() => CheckConnectivity(),
+        setRefreshing(false));
+      }, [refreshing]);
+    
     const [latestData,setLatestData]=useState([])
     const [date,setDate]=useState('')
-    useEffect(()=>{
+    // const floatingAction = useRef()
+    const handleFirstConnectivityChange = isConnected => {
+        NetInfo.isConnected.removeEventListener(
+          "connectionChange",
+          handleFirstConnectivityChange
+        );
+    
+        if (isConnected === false) {
+          alert("You are offline!");
+        } else {
+          fetchNews()
+          alert("You are online!");
+        }
+      };
+
+    const CheckConnectivity = () => {
+        // For Android devices
+        if (Platform.OS === "android") {
+          NetInfo.isConnected.fetch().then(isConnected => {
+            if (isConnected) {
+              alert("You are online!");
+              fetchNews()
+            } else {
+              alert("You are offline!");
+            }
+          });
+        } else {
+          // For iOS devices
+          NetInfo.isConnected.addEventListener(
+            "connectionChange",
+           handleFirstConnectivityChange
+          );
+        }
+      };
+
+     const fetchNews=()=>{
         var d = new Date();
         var n = d.toString()
         var res = n.split(" ")
@@ -57,6 +115,26 @@ const Home=({navigation,props,theme})=>{
         .catch(error=>{
             console.log(error)
         })
+     }
+
+    useEffect(()=>{
+        CheckConnectivity()
+        // fetchNews()
+      
+        // var d = new Date();
+        // var n = d.toString()
+        // var res = n.split(" ")
+        // console.log(res)
+        // const date = res[2]+" "+res[1]+" "+res[0] 
+        //  setDate(date)
+        // axios.get('https://newsapi.org/v2/top-headlines?country=us&apiKey=ac659059bcc34c4b9c74dfa215ff2eb7')
+        // .then(response=>{
+        //     console.log(response.data.articles)
+        //     setLatestData(response.data.articles)
+        // })
+        // .catch(error=>{
+        //     console.log(error)
+        // })
     },[])
     
     const setTopImage=(item)=>{
@@ -91,13 +169,13 @@ const Home=({navigation,props,theme})=>{
 
     return(
      latestData.length>0?
-     <SafeAreaView style={{flex:1}}>   
+     <SafeAreaView style={{flex:1}}>
+     <ScrollView style={{flex:1}} refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>       
      <View style={{flex:1}}>
-     <TouchableOpacity onPress={()=>navigation.navigate('Theme')}>
-            <Text>Switch Theme</Text>
-            </TouchableOpacity>  
+    
      <Text style={{fontSize:15,fontWeight:'bold'}}>{date}</Text>
-     
      
      <View style={{flex:1}}>
          <FlatList
@@ -165,13 +243,26 @@ const Home=({navigation,props,theme})=>{
          keyExtractor={(item, index) => index.toString()}
      />
      </View>
+     <FloatingAction
+              //  ref={(ref) => floatingAction = ref}
+                actions={floatingMenu}
+                position="right"
+                onPressItem={name=>{
+                    navigation.navigate('Theme')
+        }}
+    /> 
  </View>
+ </ScrollView>
  </SafeAreaView>
     :
     <SafeAreaView style={{flex:1}}>
+        <ScrollView style={{flex:1}} refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }> 
     <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
     <ActivityIndicator size="large" color="#38302a" />
     </View>
+    </ScrollView>
     </SafeAreaView>
     )
 

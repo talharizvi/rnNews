@@ -10,7 +10,7 @@ const ThemeScreen=({theme,changeTheme})=>{
     return(
         <View>
             <TouchableOpacity onPress={()=>changeTheme()}>
-            <Text style={{backgroundColor:theme.background}}>Dark</Text>
+            <Text style={{fontSize:20, backgroundColor:theme.background}}>Change Theme</Text>
             </TouchableOpacity>
         </View>
         )
