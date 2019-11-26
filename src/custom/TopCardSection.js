@@ -1,6 +1,6 @@
 import React from 'react';
 import {View,StyleSheet,TouchableOpacity} from 'react-native';
-
+import { connect } from "react-redux";
 
 const TopCardSection=(props)=>{
     return(
@@ -20,6 +20,12 @@ const styles=StyleSheet.create({
     }
 })
 
-
-export default TopCardSection
+const mapStateToProps=(state)=>{
+    console.log("mapStateToProps",state)
+    return{
+        theme:state.theme
+    }
+    
+};
+export default connect(mapStateToProps)(TopCardSection) 
 

@@ -1,24 +1,25 @@
 import React, {useState, useEffect} from 'react';
 import {View,FlatList,ActivityIndicator,TouchableOpacity,Image,Text} from 'react-native';
 import usePage from '../hooks/usePage';
-import TopCardSection from '../custom/TopCardSection';
+import CardSection from '../custom/CardSection';
+import { connect } from "react-redux";
 
- const CustomListView=({navigation,category})=>{
+ const CustomListView=({navigation,category,theme})=>{
 
     const[data,loadMoreData] = usePage(category)    
 
     const setNewsImage=(item)=>{
         return(
             item.urlToImage!=null?
-            <TopCardSection>
+            <CardSection>
             <Image source={{uri:item.urlToImage}} style={{width:90,height:90}}></Image>
-            </TopCardSection>
+            </CardSection>
             :
-            <TopCardSection >
+            <CardSection >
             <Image 
             style={{width:90,height:90}}
             source={require('../res/images/placeholder-image-icon.jpg')}></Image>
-            </TopCardSection>   
+            </CardSection>   
         )
     }
 
@@ -29,9 +30,9 @@ import TopCardSection from '../custom/TopCardSection';
             renderItem={({item})=> 
             <TouchableOpacity onPress={()=>navigation.navigate('WebViewScreen',{url:item.url})}> 
             <View style={{flexDirection:'row',marginHorizontal:10,marginVertical:5, borderRadius:8,
-            borderWidth: 1,borderColor: '#000000',paddingVertical:5}}>
+            borderWidth: 1,borderColor: '#000000',paddingVertical:5,backgroundColor:theme.background}}>
             {setNewsImage(item)}
-            <Text style={{flex:1,fontSize:15,fontWeight:'bold'}}>{item.title}</Text>
+            <Text style={{flex:1,fontSize:15,fontWeight:'bold',color:theme.text}}>{item.title}</Text>
         </View>
         </TouchableOpacity>
         }
@@ -50,4 +51,12 @@ import TopCardSection from '../custom/TopCardSection';
     )    
 }
 
-export default CustomListView
+const mapStateToProps=(state)=>{
+    console.log("mapStateToProps",state)
+    return{
+        theme:state.theme
+    }
+    
+};
+
+export default connect(mapStateToProps)(CustomListView)

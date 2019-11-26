@@ -4,9 +4,9 @@ import {
     Text,FlatList,Image,TouchableOpacity,ActivityIndicator,SafeAreaView
   } from 'react-native';
 import axios from 'axios';
-import Card from '../custom/Card';
 import TopCardSection from '../custom/TopCardSection';
-
+import CardSection from '../custom/CardSection';
+import { connect } from "react-redux";
 
 const categoryData=[
     {
@@ -38,7 +38,7 @@ const categoryData=[
 
 
 
-const Home=({navigation})=>{
+const Home=({navigation,props,theme})=>{
 
     const [latestData,setLatestData]=useState([])
     const [date,setDate]=useState('')
@@ -77,15 +77,15 @@ const Home=({navigation})=>{
     const setNewsImage=(item)=>{
         return(
             item.urlToImage!=null?
-            <Card nav={navigation} backgroundColor='#000'>
+            <TopCardSection>
             <Image source={{uri:item.urlToImage}} style={{width:90,height:90}}></Image>
-            </Card>
+            </TopCardSection>
             :
-            <Card nav={navigation} >
+            <TopCardSection>
             <Image 
             style={{width:90,height:90}}
             source={require('../res/images/placeholder-image-icon.jpg')}></Image>
-            </Card>
+            </TopCardSection>
         )
     }
 
@@ -93,6 +93,9 @@ const Home=({navigation})=>{
      latestData.length>0?
      <SafeAreaView style={{flex:1}}>   
      <View style={{flex:1}}>
+     <TouchableOpacity onPress={()=>navigation.navigate('Theme')}>
+            <Text>Switch Theme</Text>
+            </TouchableOpacity>  
      <Text style={{fontSize:15,fontWeight:'bold'}}>{date}</Text>
      
      
@@ -148,12 +151,16 @@ const Home=({navigation})=>{
         
          data={latestData.slice(5,latestData.length)}
          renderItem={({item})=>
-         <Card nav={navigation} webUrl={item.url}>
-         <View style={{flexDirection:'row',marginVertical:5}}>
+        
+        <TouchableOpacity onPress={()=>navigation.navigate('WebViewScreen',{url:item.url})}>
+       <CardSection>
+         <View style={{flexDirection:'row',marginVertical:5,backgroundColor:theme.background}}>
              {setNewsImage(item)}
-             <Text style={{flex:1,fontSize:15,fontWeight:'bold'}}>{item.title}</Text>
+             <Text style={{flex:1,fontSize:15,fontWeight:'bold',color:theme.text}}>{item.title}</Text>
          </View>
-          </Card>
+        </CardSection>
+        </TouchableOpacity> 
+        
          }
          keyExtractor={(item, index) => index.toString()}
      />
@@ -169,6 +176,14 @@ const Home=({navigation})=>{
     )
 
     
-} 
+}
 
-export default Home
+const mapStateToProps=(state)=>{
+    console.log("mapStateToProps",state)
+    return{
+        theme:state.theme
+    }
+    
+};
+
+export default connect(mapStateToProps)(Home)

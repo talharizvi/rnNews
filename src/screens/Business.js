@@ -16,4 +16,5 @@ const Business=({navigation})=>{
     return(
     <CustomListView category="business" navigation={navigation}/>)
 }
+
 export default Business

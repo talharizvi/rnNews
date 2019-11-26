@@ -26,7 +26,11 @@ import Sports from './src/screens/Sports';
 import Technology from './src/screens/Technology';
 import Health from './src/screens/Health';
 import Test from './src/screens/test';
-
+import Theme from './src/screens/ThemeScreen';
+import {Provider} from 'react-redux'; 
+import store from './src/res/store/store';
+import {persistor} from './src/res/store/store';
+import { PersistGate } from 'redux-persist/integration/react'
 
 const TabNavigator = createMaterialTopTabNavigator(
   {
@@ -72,6 +76,9 @@ const AppNavigator=createStackNavigator({
   },
   TopTabBar:{
     screen:TabNavigator,
+  },
+  Theme:{
+    screen:Theme
   }
 });
 
@@ -82,7 +89,11 @@ const AppContainer = createAppContainer(AppNavigator)
 
 const App = () => {
   return (
-    <AppContainer/>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <AppContainer/>
+      </PersistGate>
+    </Provider>
   );
 };
 
