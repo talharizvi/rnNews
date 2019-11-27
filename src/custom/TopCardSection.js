@@ -21,7 +21,7 @@ const styles=StyleSheet.create({
 })
 
 const mapStateToProps=(state)=>{
-    console.log("mapStateToProps",state)
+    // console.log("mapStateToProps",state)
     return{
         theme:state.theme
     }

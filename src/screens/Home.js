@@ -9,7 +9,10 @@ import CardSection from '../custom/CardSection';
 import { connect } from "react-redux";
 import { FloatingAction } from "react-native-floating-action";
 import NetInfo from "@react-native-community/netinfo";
+import SQLite from 'react-native-sqlite-storage';
 
+let db = SQLite.openDatabase('NewsDatabaseTest.db');
+let offlineArr=[]
 const categoryData=[
     {
         name:'Health',
@@ -73,6 +76,7 @@ const Home=({navigation,props,theme})=>{
         );
     
         if (isConnected === false) {
+          fetchNewsFromDb()
           alert("You are offline!");
         } else {
           fetchNews()
@@ -88,6 +92,7 @@ const Home=({navigation,props,theme})=>{
               alert("You are online!");
               fetchNews()
             } else {
+              fetchNewsFromDb()
               alert("You are offline!");
             }
           });
@@ -101,6 +106,7 @@ const Home=({navigation,props,theme})=>{
       };
 
      const fetchNews=()=>{
+       
         var d = new Date();
         var n = d.toString()
         var res = n.split(" ")
@@ -111,30 +117,55 @@ const Home=({navigation,props,theme})=>{
         .then(response=>{
             console.log(response.data.articles)
             setLatestData(response.data.articles)
+            //INSERT NEWS IN DATABASE
+            const query='INSERT INTO NewsData (id,title,urlToImage) VALUES (?,?,?)'
+            for(i=0;i<latestData.length;i++){
+              var obj = latestData[i]
+              var id=i;
+              var title = obj.title;
+              var urlToImage = obj.urlToImage;
+              const params=[id,title,urlToImage]
+              db.transaction((txn)=>{
+                txn.executeSql(query,params,(txn,results)=>{
+                  console.log(results)
+                })
+              })
+            } 
         })
         .catch(error=>{
             console.log(error)
         })
      }
 
+     const initDb=()=>{
+      db.transaction(tx=>{
+        tx.executeSql('CREATE TABLE IF NOT EXISTS '+"NewsData"+' (id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT,urlToImage TEXT)');
+    });
+     }
+
+     const fetchNewsFromDb=()=>{
+      var query='SELECT * FROM NewsData'
+      var params = [];
+       db.transaction(txn=>{
+         txn.executeSql(query,params,(tx,res)=>{
+           console.log(res)
+           console.log(res.rows.length)
+           alert(res.rows.length)
+           if(res.rows.length>0){
+              for(i=0;i<res.rows.length;i++){
+                console.log(res.rows.item(i))
+                offlineArr.push(res.rows.item(i)) 
+              }
+              console.log(offlineArr)
+              setLatestData(offlineArr)
+           }
+         })
+       })
+     }
+
     useEffect(()=>{
+      initDb()
         CheckConnectivity()
-        // fetchNews()
-      
-        // var d = new Date();
-        // var n = d.toString()
-        // var res = n.split(" ")
-        // console.log(res)
-        // const date = res[2]+" "+res[1]+" "+res[0] 
-        //  setDate(date)
-        // axios.get('https://newsapi.org/v2/top-headlines?country=us&apiKey=ac659059bcc34c4b9c74dfa215ff2eb7')
-        // .then(response=>{
-        //     console.log(response.data.articles)
-        //     setLatestData(response.data.articles)
-        // })
-        // .catch(error=>{
-        //     console.log(error)
-        // })
     },[])
     
     const setTopImage=(item)=>{
@@ -168,7 +199,7 @@ const Home=({navigation,props,theme})=>{
     }
 
     return(
-     latestData.length>0?
+     //latestData.length>0?
      <SafeAreaView style={{flex:1}}>
      <ScrollView style={{flex:1}} refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -193,6 +224,7 @@ const Home=({navigation,props,theme})=>{
              }
              horizontal
              style={{marginBottom:5}}
+             extraData={latestData}
              keyExtractor={(item, index) => index.toString()}
          />
      </View>
@@ -241,6 +273,7 @@ const Home=({navigation,props,theme})=>{
         
          }
          keyExtractor={(item, index) => index.toString()}
+         extraData={latestData}
      />
      </View>
      <FloatingAction
@@ -254,16 +287,16 @@ const Home=({navigation,props,theme})=>{
  </View>
  </ScrollView>
  </SafeAreaView>
-    :
-    <SafeAreaView style={{flex:1}}>
-        <ScrollView style={{flex:1}} refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }> 
-    <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-    <ActivityIndicator size="large" color="#38302a" />
-    </View>
-    </ScrollView>
-    </SafeAreaView>
+    // :
+    // <SafeAreaView style={{flex:1}}>
+    //     <ScrollView style={{flex:1}} refreshControl={
+    //       <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    //     }> 
+    // <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+    // <ActivityIndicator size="large" color="#38302a" />
+    // </View>
+    // </ScrollView>
+    // </SafeAreaView>
     )
 
     
