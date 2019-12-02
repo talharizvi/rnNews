@@ -1,7 +1,7 @@
 import React,{useState,useEffect,useRef,useCallback} from 'react';
 import {
     View,
-    Text,FlatList,Image,TouchableOpacity,ActivityIndicator,SafeAreaView,Button,ScrollView,RefreshControl
+    Text,FlatList,Image,TouchableOpacity,ActivityIndicator,SafeAreaView,Button,ScrollView,RefreshControl,YellowBox
   } from 'react-native';
 import axios from 'axios';
 import TopCardSection from '../custom/TopCardSection';
@@ -10,6 +10,8 @@ import { connect } from "react-redux";
 import { FloatingAction } from "react-native-floating-action";
 import NetInfo from "@react-native-community/netinfo";
 import SQLite from 'react-native-sqlite-storage';
+import fetchApiAction from '../res/store/actions/fetchApiAction';
+
 
 let db = SQLite.openDatabase('NewsDatabaseTest.db');
 let offlineArr=[]
@@ -57,16 +59,16 @@ function wait(timeout) {
   }
 
 
-const Home=({navigation,props,theme})=>{
+const Home=({navigation,props,theme,latestData,fetchNewsFromApi})=>{
+  
     const [refreshing, setRefreshing] = useState(false);
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        
         wait(2000).then(() => CheckConnectivity(),
         setRefreshing(false));
       }, [refreshing]);
     
-    const [latestData,setLatestData]=useState([])
+    //const [latestData,setLatestData]=useState([])
     const [date,setDate]=useState('')
     // const floatingAction = useRef()
     const handleFirstConnectivityChange = isConnected => {
@@ -79,8 +81,8 @@ const Home=({navigation,props,theme})=>{
           fetchNewsFromDb()
           alert("You are offline!");
         } else {
+          console.log("You are online!");
           fetchNews()
-          alert("You are online!");
         }
       };
 
@@ -89,7 +91,7 @@ const Home=({navigation,props,theme})=>{
         if (Platform.OS === "android") {
           NetInfo.isConnected.fetch().then(isConnected => {
             if (isConnected) {
-              alert("You are online!");
+              console.log("You are online!");
               fetchNews()
             } else {
               fetchNewsFromDb()
@@ -113,10 +115,12 @@ const Home=({navigation,props,theme})=>{
         console.log(res)
         const date = res[2]+" "+res[1]+" "+res[0] 
          setDate(date)
+         
         axios.get('https://newsapi.org/v2/top-headlines?country=us&apiKey=ac659059bcc34c4b9c74dfa215ff2eb7')
         .then(response=>{
             console.log(response.data.articles)
-            setLatestData(response.data.articles)
+            //setLatestData(response.data.articles)
+            fetchNewsFromApi(response.data.articles)
             //INSERT NEWS IN DATABASE
             const query='INSERT INTO NewsData (id,title,urlToImage) VALUES (?,?,?)'
             for(i=0;i<latestData.length;i++){
@@ -157,15 +161,20 @@ const Home=({navigation,props,theme})=>{
                 offlineArr.push(res.rows.item(i)) 
               }
               console.log(offlineArr)
-              setLatestData(offlineArr)
+              //setLatestData(offlineArr)
+              fetchNewsFromApi(offlineArr)
            }
          })
        })
      }
 
     useEffect(()=>{
-      initDb()
+        YellowBox.ignoreWarnings([
+          'VirtualizedLists should never be nested', // TODO: Remove when fixed
+        ]),
+        initDb()
         CheckConnectivity()
+        
     },[])
     
     const setTopImage=(item)=>{
@@ -198,6 +207,7 @@ const Home=({navigation,props,theme})=>{
         )
     }
 
+    
     return(
      //latestData.length>0?
      <SafeAreaView style={{flex:1}}>
@@ -210,7 +220,8 @@ const Home=({navigation,props,theme})=>{
      
      <View style={{flex:1}}>
          <FlatList
-             data={latestData.slice(0,5)}
+          data={latestData.slice(0,5)}
+            //  data={latestData}
              renderItem={({item})=>
              <TouchableOpacity onPress={()=>navigation.navigate('WebViewScreen',{url:item.url})}>
              <View style={{flexDirection:'column',width:200,column:200}}>
@@ -258,8 +269,8 @@ const Home=({navigation,props,theme})=>{
 
      <View style={{flex:2.5}}>
      <FlatList
-        
          data={latestData.slice(5,latestData.length)}
+        // data={latestData}
          renderItem={({item})=>
         
         <TouchableOpacity onPress={()=>navigation.navigate('WebViewScreen',{url:item.url})}>
@@ -305,9 +316,15 @@ const Home=({navigation,props,theme})=>{
 const mapStateToProps=(state)=>{
     console.log("mapStateToProps",state)
     return{
-        theme:state.theme
+        theme:state.themeR.theme,
+        latestData:state.fetchNewsR.list
     }
-    
 };
 
-export default connect(mapStateToProps)(Home)
+const mapDispatchToProps=(dispatch)=>{
+    return{
+      fetchNewsFromApi:(result)=>{dispatch(fetchApiAction(result))}
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Home)

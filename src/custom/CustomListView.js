@@ -54,7 +54,7 @@ import { connect } from "react-redux";
 const mapStateToProps=(state)=>{
     console.log("mapStateToProps",state)
     return{
-        theme:state.theme
+        theme:state.themeR.theme
     }
     
 };

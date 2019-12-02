@@ -23,7 +23,7 @@ const styles=StyleSheet.create({
 const mapStateToProps=(state)=>{
     // console.log("mapStateToProps",state)
     return{
-        theme:state.theme
+        theme:state.themeR.theme
     }
     
 };
