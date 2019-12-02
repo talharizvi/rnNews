@@ -39,7 +39,6 @@ const TabNavigator = createMaterialTopTabNavigator(
       Sports:{screen:Sports},
       Entertainment:{screen:Entertainment},
       Technology:{screen:Technology},
-     
   },
   { 
     swipeEnabled:true,
@@ -76,6 +75,9 @@ const AppNavigator=createStackNavigator({
   },
   TopTabBar:{
     screen:TabNavigator,
+    navigationOptions:{
+      header:null
+    }
   },
   Theme:{
     screen:Theme
