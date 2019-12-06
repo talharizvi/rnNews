@@ -19,7 +19,7 @@ const ThemeScreen=({theme,changeTheme})=>{
 const mapStateToProps=(state)=>{
     console.log("mapStateToProps",state)
     return{
-        theme:state.theme
+        theme:state.themeR.theme
     }
     
 };
@@ -28,6 +28,7 @@ const mapDispatchToProps=(dispatch)=>{
     console.log("dispacth",dispatch)
     return{
         changeTheme:()=>{
+            console.log("insied mapDispatch")
             dispatch(switchTheme())}
     }
 }

@@ -8,9 +8,9 @@ const ThemeReducer=(state=initialState,action)=>{
     switch(action.type){
         case "CHANGE_THEME":
             
-            if(state.theme==themes.dark){
+            if(JSON.stringify(state.theme)===JSON.stringify(themes.dark)){
                 return {...state,theme:themes.light}
-            }else if(state.theme==themes.light){
+            }else if(JSON.stringify(state.theme)==JSON.stringify(themes.light)){
                 return {...state,theme:themes.dark}
             }
         default:return state  
